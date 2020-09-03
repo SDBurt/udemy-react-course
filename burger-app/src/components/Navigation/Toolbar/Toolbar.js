@@ -4,14 +4,17 @@ import classes from './Toolbar.module.css'
 
 import Logo from '../../UI/Logo/Logo'
 import NavigationItems from '../NavigationItems/NavigationItems'
-
+import DrawerToggle from '../SideDrawer/DrawerToggle/DrawerToggle'
 
 const Toolbar = props => {
     return (
         <header className={classes.Toolbar}>
-            <div>MENU</div>
-            <Logo />
-            <nav>
+            <DrawerToggle clicked={props.openSideDrawer} />
+            <div className={[classes.Logo, classes.DesktopOnly].join(' ')}>
+                <Logo />
+            </div>
+
+            <nav className={classes.DesktopOnly}>
                 <NavigationItems />
             </nav>
         </header>
@@ -19,7 +22,7 @@ const Toolbar = props => {
 }
 
 Toolbar.propTypes = {
-
+    openSideDrawer: PropTypes.func
 }
 
 export default Toolbar

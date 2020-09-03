@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 import Backdrop from '../Backdrop/Backdrop'
 import classes from './Modal.module.css'
@@ -20,4 +21,14 @@ const Modal = props => {
     )
 }
 
-export default Modal
+// Check if props are equal, used in memo for performance optimization
+const areEqual = (prevProps, nextProps) => {
+    return prevProps.show === nextProps.show
+}
+
+Modal.propTypes = {
+    show: PropTypes.bool,
+    hide: PropTypes.func
+}
+
+export default React.memo(Modal, areEqual)

@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 
 import NavigationItem from './NavigationItem/NavigationItem'
 
@@ -12,10 +11,6 @@ const NavigationItems = props => {
             <NavigationItem link="/">Checkout</NavigationItem>
         </ul>
     )
-}
-
-NavigationItems.propTypes = {
-
 }
 
 export default NavigationItems

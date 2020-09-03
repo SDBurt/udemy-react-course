@@ -5,8 +5,6 @@ import Button from '../../UI/Button/Button'
 
 const OrderSummary = props => {
 
-    // <li>Salad: 1</li>
-
     const ingredientSummary = Object.keys(props.ingredients)
         .map(key => {
             return (
