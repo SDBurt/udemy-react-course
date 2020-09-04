@@ -7,12 +7,12 @@ import classes from './Modal.module.css'
 const Modal = props => {
     return (
         <React.Fragment>
-            <Backdrop show={props.show} clicked={props.hide} />
+            <Backdrop showBackdrop={props.showModal} hideBackdrop={props.hideModal} />
             <div
                 className={classes.Modal}
                 style={{
-                    transform: props.show ? 'translateY(0)' : 'translateY(-100vh)',
-                    opacity: props.show ? '1' : '0'
+                    transform: props.showModal ? 'translateY(0)' : 'translateY(-100vh)',
+                    opacity: props.showModal ? '1' : '0'
                 }}
             >
                 {props.children}
@@ -23,12 +23,15 @@ const Modal = props => {
 
 // Check if props are equal, used in memo for performance optimization
 const areEqual = (prevProps, nextProps) => {
-    return prevProps.show === nextProps.show
+    return (
+        prevProps.showModal === nextProps.showModal
+        && prevProps.children === nextProps.children
+    );
 }
 
 Modal.propTypes = {
-    show: PropTypes.bool,
-    hide: PropTypes.func
+    showModal: PropTypes.bool,
+    hideModal: PropTypes.func
 }
 
 export default React.memo(Modal, areEqual)
