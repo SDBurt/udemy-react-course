@@ -5,6 +5,7 @@ import classes from './Burger.module.css'
 
 import PropTypes from 'prop-types';
 
+
 const Burger = (props) => {
 
     let transformedIngredients = Object.keys(props.ingredients)

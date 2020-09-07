@@ -10,7 +10,6 @@ import Spinner from '../../components/UI/Spinner/Spinner'
 import axios from '../../axios-orders'
 
 
-
 const INGREDIENT_PRICES = {
     salad: 0.75,
     cheese: 0.75,
@@ -46,32 +45,21 @@ export class BurgerBuilder extends Component {
     purchaseContinueHandler = () => {
         this.setState({ loading: true })
 
-        // Not realistic to have price here in the front end
-        // someone could change it before it is sent
-        const order = {
-            ingredients: this.state.ingredients,
-            price: this.state.totalPrice,
-            customer: {
-                name: 'Max Schwarzmuller',
-                address: {
-                    street: 'Teststreet 1',
-                    zipCode: '13412341',
-                    country: 'Germany'
-                },
-                email: 'test@test.com'
-            },
-            deliveryMethod: 'takeout'
-
+        const queryParams = []
+        for (let i in this.state.ingredients) {
+            queryParams.push(
+                encodeURIComponent(i) + '='
+                + encodeURIComponent(this.state.ingredients[i])
+            )
         }
-        axios.post('orders.jsonn', order)
-            .then(res => {
-                console.log("order: ", res);
-                this.setState({ loading: false, purchasing: false })
-            })
-            .catch(err => {
-                console.error("error: ", err)
-                this.setState({ loading: false, purchasing: false })
-            });
+
+        queryParams.push('price=' + this.state.totalPrice);
+        const queryString = queryParams.join('&')
+
+        this.props.history.push({
+            pathname: '/checkout',
+            search: '?' + queryString
+        });
     }
 
     updatePurchaseState = (ingredients) => {
