@@ -7,6 +7,10 @@ import classes from './ContactData.module.css';
 import Spinner from '../../../components/UI/Spinner/Spinner'
 import axios from '../../../axios-orders';
 import Input from '../../../components/UI/Input/Input';
+import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler'
+
+
+import { purchaseBurger } from '../../../redux/actions/order'
 
 class ContactData extends Component {
 
@@ -33,7 +37,8 @@ class ContactData extends Component {
                 },
                 value: '',
                 validation: {
-                    required: true
+                    required: true,
+                    isEmail: true
                 },
                 valid: false,
                 touched: false
@@ -55,13 +60,14 @@ class ContactData extends Component {
                 elementType: 'input',
                 elementConfig: {
                     type: 'text',
-                    placeholder: 'Postal Code'
+                    placeholder: 'Zip Code'
                 },
                 value: '',
                 validation: {
                     required: true,
                     minLength: 5,
-                    maxLength: 5
+                    maxLength: 5,
+                    isNumeric: true
                 },
                 valid: false,
                 touched: false
@@ -92,38 +98,24 @@ class ContactData extends Component {
                 valid: true,
             },
         },
-        formIsValid: false,
-        loading: false
+        formIsValid: false
     }
 
     orderHandler = (event) => {
         event.preventDefault()
 
-        this.setState({ loading: true })
-
         const formData = {}
-
         for (let element in this.state.orderForm) {
             formData[element] = this.state.orderForm[element].value
         }
-
         const order = {
             ingredients: this.props.ings,
             price: this.props.price,
-            orderData: formData
+            orderData: formData,
+            userId: this.props.userId
         }
-        axios.post('orders.json', order)
-            .then(res => {
-                console.log("order: ", res);
-                this.setState({ loading: false })
-                this.props.history.push('/');
-            })
-            .catch(err => {
-                console.error("error: ", err)
-                this.setState({ loading: false })
-            });
 
-
+        this.props.onPurchaseBurger(order, this.props.token)
     }
 
     checkValidity(value, rules) {
@@ -141,6 +133,16 @@ class ContactData extends Component {
             isValid = value.length <= rules.maxLength && isValid
         }
 
+        if (rules.isEmail) {
+            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            isValid = re.test(String(value).toLowerCase());
+        }
+
+        if (rules.isNumeric) {
+            const pattern = /^\d+$/;
+            isValid = pattern.test(value) && isValid
+        }
+
         return isValid
     }
 
@@ -156,7 +158,6 @@ class ContactData extends Component {
         updatedFormElement.value = event.target.value;
         updatedFormElement.touched = true;
         updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation)
-        console.log(updatedFormElement);
         orderForm[inputId] = updatedFormElement;
 
         let formIsValid = true;
@@ -199,7 +200,7 @@ class ContactData extends Component {
             </form>
         );
 
-        if (this.state.loading) {
+        if (this.props.loading) {
             form = <Spinner />
         };
 
@@ -214,9 +215,19 @@ class ContactData extends Component {
 
 const mapStateToProps = state => {
     return {
-        ings: state.ingredients,
-        price: state.totalPrice
+        ings: state.burgerBuilder.ingredients,
+        price: state.burgerBuilder.totalPrice,
+        loading: state.order.loading,
+        token: state.auth.token,
+        userId: state.auth.userId
     }
 }
 
-export default connect(mapStateToProps)(ContactData);
+const mapActionsToProps = (dispatch) => {
+    return {
+        onPurchaseBurger: (orderData, token) => dispatch(purchaseBurger(orderData, token))
+    }
+
+}
+
+export default connect(mapStateToProps, mapActionsToProps)(withErrorHandler(ContactData, axios));

@@ -28,11 +28,19 @@ const BuildControls = (props) => {
         <div className={classes.BuildControls}>
             <p>Current Price: <strong>${props.price.toFixed(2)}</strong></p>
             {buildControls}
+
             <button
                 className={classes.OrderButton}
                 disabled={!props.purchaseable}
-                onClick={props.order}
-            >ORDER NOW</button>
+                onClick={props.order}>
+                {props.isAuth
+                    ? 'ORDER NOW'
+                    : 'SIGNUP TO ORDER'
+                }
+            </button>
+
+
+
         </div>
     )
 }
