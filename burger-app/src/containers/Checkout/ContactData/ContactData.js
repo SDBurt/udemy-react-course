@@ -9,6 +9,7 @@ import axios from '../../../axios-orders';
 import Input from '../../../components/UI/Input/Input';
 import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler'
 
+import checkValidity from '../../../validation/formValidation';
 
 import { purchaseBurger } from '../../../redux/actions/order'
 
@@ -118,34 +119,6 @@ class ContactData extends Component {
         this.props.onPurchaseBurger(order, this.props.token)
     }
 
-    checkValidity(value, rules) {
-        let isValid = true;
-
-        if (rules.required) {
-            isValid = value.trim() !== '' && isValid
-        }
-
-        if (rules.minLength) {
-            isValid = value.length >= rules.minLength && isValid
-        }
-
-        if (rules.maxLength) {
-            isValid = value.length <= rules.maxLength && isValid
-        }
-
-        if (rules.isEmail) {
-            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            isValid = re.test(String(value).toLowerCase());
-        }
-
-        if (rules.isNumeric) {
-            const pattern = /^\d+$/;
-            isValid = pattern.test(value) && isValid
-        }
-
-        return isValid
-    }
-
     inputChangedHandler = (event, inputId) => {
 
         const orderForm = {
@@ -157,7 +130,7 @@ class ContactData extends Component {
 
         updatedFormElement.value = event.target.value;
         updatedFormElement.touched = true;
-        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation)
+        updatedFormElement.valid = checkValidity(updatedFormElement.value, updatedFormElement.validation)
         orderForm[inputId] = updatedFormElement;
 
         let formIsValid = true;
